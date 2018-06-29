@@ -318,22 +318,21 @@
         if (!navigator.serviceWorker) {
             return Promise.resolve();
         }
-        return idb.open('newsAPI', 2, function (upgradeDb) {
+        return idb.open('currency', 2, function (upgradeDb) {
             //console.log(upgradeDb);
-            var store = upgradeDb.createObjectStore('newsAPI', {
-                keyPath: 'publishedAt'
-            });
-            var favorite = upgradeDb.createObjectStore('favorite', {
-                keyPath: 'publishedAt'
-            });
-            store.createIndex('by-source', 'source.id');
+            var currencyStore = upgradeDb.createObjectStore('currency');
+            currencyStore.createIndex("id","currencyId")
+            currencyStore.put({id:1,currencyId: "AFN",
+            currencyName: "Afghan afghani",
+            })
+            //store.createIndex('by-source', 'source.id');
             //store.createIndex('by-country', )
         });
     }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function(){
-        navigator.serviceWorker.register('/sw2.js').then(function(registration){
+        navigator.serviceWorker.register('/sw.js').then(function(registration){
           console.log('Registration Successful with scope', registration.scope);
  
         }, function(err){
@@ -344,45 +343,73 @@
       
     }
     
-
-    adminApp.controller('AllPostsCtrl', function ($scope, postList) {
-        //console.log(postList);
-        var idb = require('idb');
-        var dbPromise = openDatabase();
-        dbPromise.then(function (db) {
-            if (!db) return;
-            var tx = db.transaction('newsAPI', 'readwrite');
-            var store = tx.objectStore('newsAPI');
-            postList.forEach(function (message) {
-                store.put(message);
-            });
-            
-            //limit store to 4000
-            store.index('by-source').openCursor(null, "prev").then(function (cursor) {
-                return cursor.advance(4000);
-            }).then(function deleteRest(cursor) {
-                if (!cursor) return;
-                cursor.delete();
-                return cursor.continue().then(deleteRest);
-            }); 
-        })
-        $scope.posts = postList;
-        $scope.favourite = function (post) {
-			//console.log(post);
-			dbPromise.then(function (db) {
-				if (!db) return;
-				var tx = db.transaction('favorite', 'readwrite');
-				var store = tx.objectStore('favorite');
-				store.put(post);
-
-            }); 
-        
+    adminApp.controller('ctrl', function ($scope, $http, country, currency) {
+      var idb = require('idb'); 
+      var dbPromise=idb.open('currency',1,function(db){
+        var store=db.createObjectStore('currencyList', {keyPath:'currencyId'});
+        var store=db.createObjectStore('rate');
+      })
+      dbPromise.then(function(db){
+        var tx=db.transaction('currencyList','readwrite')
+        var store=tx.objectStore('currencyList')
+        for (const c in country){
+          store.put(country[c])
         }
-	    //$scope.activePost = false;
-	    //$scope.setActive = function(post){
-		//$scope.activePost = post;
-	    //}
+        return tx.complete;
+      }).then(function(){
+        //console.log("Complete");
+      })
+      /*
+      var dbPromise = openDatabase();
+      dbPromise.then(function (db) {
+          console.log("opened")
+         
+          postList.forEach(function (message) {
+              store.put(message);
+          }); */
+          
+          //limit store to 4000
+          /*
+          store.index('by-source').openCursor(null, "prev").then(function (cursor) {
+              return cursor.advance(4000);
+          }).then(function deleteRest(cursor) {
+              if (!cursor) return;
+              cursor.delete();
+              return cursor.continue().then(deleteRest);
+          }); 
+      })*/
+      $scope.currencyList=currency;
+      $scope.countryList=country;
+      $scope.convert = function(){
+        //console.log($scope.amount)
+        fromCurrency = encodeURIComponent($scope.fromCountry);
+        toCurrency = encodeURIComponent($scope.toCountry);
+        amount=encodeURIComponent($scope.amount)
+        var query = fromCurrency + '_' + toCurrency; 
+        var query2 = toCurrency + '_' + fromCurrency
+        var url = `https://free.currencyconverterapi.com/api/v5/convert?q=${query}&compact=ultra`;
+        $http.get(url).then((response)=>{
+          var rate=response.data[query];
+          var rate2=1/rate;
+          var result = amount*rate
+          dbPromise.then(function(db){
+            var tx=db.transaction('rate','readwrite')
+            var store=tx.objectStore('rate')
+            store.put(response.data[query], query);
+            //store.put(rate2,query2);
+            return tx.complete;
+          }).then(function(){
+            //console.log("Complete");
+          })
+          console.log(result)
+          $scope.result=result;
+          $scope.rate=rate
+        });
+        
+      }
     });
+    
+ 
     /*
     adminApp.controller('AddPostCtrl', function($scope, Posts){
 	    $scope.post = {};

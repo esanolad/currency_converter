@@ -5,7 +5,7 @@
         </div>
         <div class="left aligned column">
         <select class="ui dropdown" ng-model="fromCountry">
-            <option ng-repeat="fromCountry in countryList" ng-value="fromCountry.currencyId">{{fromCountry.name}}</option>
+            <option ng-repeat="fromCountry in countryList" ng-value="fromCountry.currencyId">{{fromCountry.currencyName}}</option>
         </select>
     </div>
     </div>
@@ -15,7 +15,7 @@
         </div>
         <div class="left aligned column">
             <select class="ui  dropdown" ng-model="toCountry">
-                    <option ng-repeat="toCountry in countryList" ng-value="toCountry.currencyId">{{toCountry.name}}</option>
+                    <option ng-repeat="toCountry in countryList" ng-value="toCountry.currencyId">{{toCountry.currencyName}}</option>
             </select>
     </div>
     </div>

@@ -312,26 +312,17 @@
 }());
 
 },{}],2:[function(require,module,exports){
-    var CACHE_NAME = "newsAPI_cache_v2";
+    var CACHE_NAME = "currency_cache_v1";
     var idb = require('idb');
     var urlsToCache = [
-        '/',
-        '/common/modules/posts.js',
-        '/admin/css/main.css',
-        '/admin/js/searchbox.js',
-        '/admin/js/lib/markdown.js',
-        '/admin/js/controllers.js',
-        '/admin/js/app.js',
-        '/admin/templates/nav.html',
-        '/admin/templates/allPosts.html',
-        'https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js',
-        'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js',
-        'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css',
-        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.js',
-        'https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.js',
-        'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.2/angular-sanitize.js',
-        'https://cdn.rawgit.com/showdownjs/showdown/1.0.2/dist/showdown.min.js'
-    ];
+      '/',
+      '/css/semantic.min.css',
+      'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.js',
+      'script/app.js',
+      'script/controllers.js',
+      'script/posts.js'
+       ];
     self.addEventListener('install', function (event){
 	    event.waitUntil(
 		    caches.open(CACHE_NAME).then(function(cache){
@@ -341,12 +332,10 @@
 	    );
     });
     function idbMs(source) {
-        //source = source || 0;
-
         var idb = require('idb');
-        var dbPromise = idb.open('newsAPI', 2);
+        var dbPromise = idb.open('currency', 2);
         return dbPromise.then(function (db) {
-            var tx = db.transaction('newsAPI').objectStore('newsAPI').index('by-source');
+            var tx = db.transaction('currency').objectStore('currency').index('by-source');
             if (source == undefined) {
                 return tx.getAll().then(function (message) {
                     //console.log(message);
@@ -359,17 +348,7 @@
             });
         });
     }
-    function favorite() {
-        var idb = require('idb');
-        var dbPromise = idb.open('newsAPI', 2);
-        return dbPromise.then(function (db) {
-            var tx = db.transaction('favorite').objectStore('favorite');
-            return tx.getAll().then(function(message){
-                //console.log(message);
-                return message;
-            });
-        });
-    }
+    
 
     self.addEventListener('fetch', function (event) {
         //console.log(event.request);
@@ -380,11 +359,11 @@
             caches.match(event.request).then(function (response) {
                 //serve from cache
                 if (response) {
-                    console.log('fetching from cache: ', response.url);
+                   // console.log('fetching from cache: ', response.url);
                     return response;
                 }
 
-                //check for favorites
+                
                 
                 var fetchRequest = event.request.clone();
                 
@@ -396,13 +375,10 @@
                     
                     //console.log(fetchRequest.url);
                     //CHECK IF THE SERVER CANNOT CONNECT TO NEWSAPI
-                    if (fetchRequest.url.startsWith('http://localhost:3000/api/sources') && response.status == 404) {
+                    if (fetchRequest.url.startsWith('https://free.currencyconverterapi.com/api/v5/convert')) {
                         var url = fetchRequest.url;
                         var source = url.slice(url.lastIndexOf('/') + 1);
-                        return idbMs(source).then(function (news) {
-                            return new Response(JSON.stringify(news));
-                        
-                        });
+                        console.log("API CALL")
                     } 
                     if (fetchRequest.url.startsWith('http://localhost:3000/api/posts') && response.status == 404) {
                         
@@ -414,15 +390,7 @@
                         });
                     }  
 
-                    if (fetchRequest.url=='http://localhost:3000/api/favourite/'){
-
-                    //fetch data from favorite store
-                    //console.log('handle');
-                      return favorite().then(function (news) {
-                          return new Response(JSON.stringify(news));
-                      });
-
-                    } 
+      
 
                     var responseToCache = response.clone();
 
