@@ -7,7 +7,7 @@
 * [Preview](#Preview)
 
 ## Description
-A  front End offline app that uses the free currency converter API to convert currencies
+A  front End offline app that uses the free currency converter API : https://free.currencyconverterapi.com/ to convert currencies
 
 ES6 Java script
 
