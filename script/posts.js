@@ -5,13 +5,13 @@ postsModule.service('Posts', function($http){
 	return {
 		currencies: function(){
 			return $http.get("https://free.currencyconverterapi.com/api/v5/currencies")
-				.then(function(response){
+				.then((response)=>{
 				return response.data.results;
 			});
 		},
 		countries: function(){
 			return $http.get("https://free.currencyconverterapi.com/api/v5/countries")
-				.then(function(response){
+				.then((response)=>{
 					//console.log(response.data)
 					if (response.data.results) {
 						return response.data.results; //api data

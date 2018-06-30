@@ -358,9 +358,9 @@
         var query2 = toCurrency + '_' + fromCurrency
         var url = `https://free.currencyconverterapi.com/api/v5/convert?q=${query}&compact=ultra`;
         $http.get(url).then((response)=>{
-          console.log(response.data)
+          //console.log(response.data)
           var rate=response.data[query];
-          console.log(rate)
+          //console.log(rate)
           var rate2=1/rate;
           var result = amount*rate
           dbPromise.then(function(db){

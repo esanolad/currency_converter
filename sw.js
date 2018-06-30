@@ -328,7 +328,7 @@
        ];
     self.addEventListener('install', function (event){
 	    event.waitUntil(
-		    caches.open(CACHE_NAME).then(function(cache){
+		    caches.open(CACHE_NAME).then((cache)=>{
 			    console.log('cache opened');
 			    return cache.addAll(urlsToCache);
 		    })
@@ -339,36 +339,36 @@
         let idb = require('idb');
         let dbPromise = idb.open('currency', 1);
         if (rate!=''){
-          return dbPromise.then(function (db) {
+          return dbPromise.then((db) =>{
             let tx = db.transaction('rate').objectStore('rate');
                 return tx.getAll(rate).then(function (rateVal) {
-                  console.log(rateVal);
+                  //console.log(rateVal);
                   return rateVal;
                 });
         });
         }
         return dbPromise.then(function (db) {
             let tx = db.transaction('currencyList').objectStore('currencyList');
-                return tx.getAll().then(function (currency) {
+                return tx.getAll().then((currency)=> {
                     return currency;
                 });
         });
     } 
     self.addEventListener('fetch', function (event) {
         //console.log("event.request");
-        console.log(event.request.url);
+        //console.log(event.request.url);
         event.respondWith(
-            caches.match(event.request).then(function (response) {
+            caches.match(event.request).then( (response) =>{
                 if (response) {
                     return response;
                 }
                 let fetchRequest = event.request.clone();
-                return fetch(fetchRequest).then(function (response) {
-                    console.log(response)
+                return fetch(fetchRequest).then((response) =>{
+                    //console.log(response)
                    
                     let responseToCache = response.clone();
 
-                    caches.open(CACHE_NAME).then(function (cache) {
+                    caches.open(CACHE_NAME).then( (cache) =>{
                         //cache.put(event.request, responseToCache);
                     })
                     
@@ -381,7 +381,7 @@
                         let query =url.substr(url.indexOf('=') + 1,7);
                         console.log(query)
                         console.log("Fetch from IDB")
-                        return idbMs(query).then(function (val) {
+                        return idbMs(query).then( (val)=> {
                           const rateVal={}
                           rateVal[query]=val[0]
 
@@ -392,7 +392,7 @@
                        
                       console.log("Fetching from IDB...")
                       //console.log(res)
-                       return idbMs().then(function (cur) {
+                       return idbMs().then((cur)=> {
                           return currList=new Response(JSON.stringify(cur));
                         });
                        

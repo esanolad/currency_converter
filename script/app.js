@@ -18,7 +18,7 @@ adminApp.config(function($stateProvider){
 					}); 
 				}, */
 				country: function(Posts){
-					return Posts.countries().then(function(data){
+					return Posts.countries().then((data)=>{
 						//console.log(data);
 						return data;
 					}); 
