@@ -353,6 +353,7 @@
         var tx=db.transaction('currencyList','readwrite')
         var store=tx.objectStore('currencyList')
         for (const c in country){
+          //console.log(c)
           store.put(country[c])
         }
         return tx.complete;
@@ -380,6 +381,7 @@
       })*/
      // $scope.currencyList=currency;
       $scope.countryList=country;
+      //console.log(country)
       $scope.convert = function(){
         //console.log($scope.amount)
         fromCurrency = encodeURIComponent($scope.fromCountry);
