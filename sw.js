@@ -335,19 +335,23 @@
 	    );
     });
     
-    function idbMs() {
-      //console.log("called")
+    function idbMs(rate='') {
         let idb = require('idb');
         let dbPromise = idb.open('currency', 1);
-        return dbPromise.then(function (db) {
-         // console.log(db)
-            let tx = db.transaction('currencyList').objectStore('currencyList');
-                return tx.getAll().then(function (message) {
-                    console.log(message);
-                    return message;
+        if (rate!=''){
+          return dbPromise.then(function (db) {
+            let tx = db.transaction('rate').objectStore('rate');
+                return tx.getAll(rate).then(function (rateVal) {
+                  console.log(rateVal);
+                  return rateVal;
                 });
-            
-           
+        });
+        }
+        return dbPromise.then(function (db) {
+            let tx = db.transaction('currencyList').objectStore('currencyList');
+                return tx.getAll().then(function (currency) {
+                    return currency;
+                });
         });
     } 
     self.addEventListener('fetch', function (event) {
@@ -361,26 +365,13 @@
                 let fetchRequest = event.request.clone();
                 return fetch(fetchRequest).then(function (response) {
                     console.log(response)
-                    //CHECK IF THE SERVER CANNOT CONNECT TO THE API
-                    
-                    if (fetchRequest.url.startsWith('http://localhost:3000/api/posts') && response.status == 404) {
-                        
-                        console.log(fetchRequest.url);
-                        
-                        return idbMs().then(function (news) {
-                            return new Response(JSON.stringify(news));
-                      
-                        });
-                    }  
-
-      
-
+                   
                     let responseToCache = response.clone();
 
                     caches.open(CACHE_NAME).then(function (cache) {
                         //cache.put(event.request, responseToCache);
                     })
-                    //console.log(responseToCache);
+                    
                     return response;
                 }).catch(function (err){
                     //NOT CONNECTED TO SERVER
@@ -390,35 +381,21 @@
                         let query =url.substr(url.indexOf('=') + 1,7);
                         console.log(query)
                         console.log("Fetch from IDB")
-                        let res= new Response(JSON.stringify({
-                          "USD_PHP": 53.310001
-                          })
-                        );
-                        console.log(res)
-                        return res
+                        return idbMs(query).then(function (val) {
+                          const rateVal={}
+                          rateVal[query]=val[0]
+
+                          return currList=new Response(JSON.stringify(rateVal));
+                        });
                     } 
                     if (fetchRequest.url.startsWith('https://free.currencyconverterapi.com/api/v5/countries')) {
                        
-                        //let url = fetchRequest.url;
-                        //let query =url.substr(url.indexOf('=') + 1,7);
-                       // console.log(query)
-                        console.log("Fetching from IDB...")
-                        let res= new Response(JSON.stringify({"AF":{
-                          "alpha3": "AFG",
-                          "currencyId": "AFN",
-                          "currencyName": "Afghan afghani",
-                          "currencySymbol": "؋",
-                          "id": "AF",
-                          "name": "Afghanistan"
-                          }})
-                        );
-                        //console.log(res)
+                      console.log("Fetching from IDB...")
+                      //console.log(res)
                        return idbMs().then(function (cur) {
                           return currList=new Response(JSON.stringify(cur));
-                          //console.log(currList[3])
-                          //return currList;
                         });
-                        //return res
+                       
                         
                     } 
                     

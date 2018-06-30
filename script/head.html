@@ -29,20 +29,12 @@
                 </button>
         </div>
     </div>
-    <div class="row">
-        <!--
-        <div class="right aligned column">
-            <a class="ui big label">Rate</a>
-        </div> -->
+    <div class="row" ng-show="showResult">
         <div class="left aligned column">
-            <a class="ui big label" ng-bind="rate">0.00</a>
+            <a class="ui basic big label" ng-bind="rate">0.00</a>
         </div>
-        <!--
-        <div class="right aligned column">
-            <a class="ui big label">Result</a>
-        </div> -->
         <div class="left aligned column">
-            <a class="ui big label" ng-bind="result">0.00</a>
+            <a class="ui basic big label" ng-bind="result">0.00</a>
         </div> 
     </div>
 </div>

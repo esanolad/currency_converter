@@ -313,7 +313,7 @@
 
 },{}],2:[function(require,module,exports){
     var idb = require('idb');
-    
+    /*
     function openDatabase() {
         if (!navigator.serviceWorker) {
             return Promise.resolve();
@@ -328,7 +328,7 @@
             //store.createIndex('by-source', 'source.id');
             //store.createIndex('by-country', )
         });
-    }
+    } */
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function(){
@@ -360,26 +360,7 @@
       }).then(function(){
         //console.log("Complete");
       })
-      /*
-      var dbPromise = openDatabase();
-      dbPromise.then(function (db) {
-          console.log("opened")
-         
-          postList.forEach(function (message) {
-              store.put(message);
-          }); */
-          
-          //limit store to 4000
-          /*
-          store.index('by-source').openCursor(null, "prev").then(function (cursor) {
-              return cursor.advance(4000);
-          }).then(function deleteRest(cursor) {
-              if (!cursor) return;
-              cursor.delete();
-              return cursor.continue().then(deleteRest);
-          }); 
-      })*/
-     // $scope.currencyList=currency;
+      
       $scope.countryList=country;
       //console.log(country)
       $scope.convert = function(){
@@ -400,7 +381,7 @@
             var tx=db.transaction('rate','readwrite')
             var store=tx.objectStore('rate')
             store.put(response.data[query], query);
-            //store.put(rate2,query2);
+            store.put(rate2,query2);
             return tx.complete;
           }).then(function(){
             //console.log("Complete");
@@ -414,13 +395,4 @@
     });
     
  
-    /*
-    adminApp.controller('AddPostCtrl', function($scope, Posts){
-	    $scope.post = {};
-	    $scope.addPost = function(newPost){
-		    Posts.add(newPost).then(function(res){
-			    console.log(res);
-		    });
-	    };
-    }); */
 },{"idb":1}]},{},[2]);

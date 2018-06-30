@@ -19,7 +19,7 @@ adminApp.config(function($stateProvider){
 				}, */
 				country: function(Posts){
 					return Posts.countries().then(function(data){
-						console.log(data);
+						//console.log(data);
 						return data;
 					}); 
 				}
