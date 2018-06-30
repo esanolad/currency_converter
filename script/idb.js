@@ -1,4 +1,3 @@
-(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 'use strict';
 
 (function() {
@@ -245,6 +244,9 @@
   // TODO: remove this once browsers do the right thing with promises
   ['openCursor', 'openKeyCursor'].forEach(function(funcName) {
     [ObjectStore, Index].forEach(function(Constructor) {
+      // Don't create iterateKeyCursor if openKeyCursor doesn't exist.
+      if (!(funcName in Constructor.prototype)) return;
+
       Constructor.prototype[funcName.replace('open', 'iterate')] = function() {
         var args = toArray(arguments);
         var callback = args[args.length - 1];
@@ -287,11 +289,13 @@
       var p = promisifyRequestCall(indexedDB, 'open', [name, version]);
       var request = p.request;
 
-      request.onupgradeneeded = function(event) {
-        if (upgradeCallback) {
-          upgradeCallback(new UpgradeDB(request.result, event.oldVersion, request.transaction));
-        }
-      };
+      if (request) {
+        request.onupgradeneeded = function(event) {
+          if (upgradeCallback) {
+            upgradeCallback(new UpgradeDB(request.result, event.oldVersion, request.transaction));
+          }
+        };
+      }
 
       return p.then(function(db) {
         return new DB(db);
@@ -310,97 +314,3 @@
     self.idb = exp;
   }
 }());
-
-},{}],2:[function(require,module,exports){
-    let CACHE_NAME = "currency_cache_v1";
-    let idb = require('idb');
-    let urlsToCache = [
-      '/index.html',
-      '/css/semantic.min.css',
-      'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.js',
-      'https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.js',
-      'https://fonts.gstatic.com/s/lato/v14/S6uyw4BMUTPHjx4wXg.woff2',
-      'script/app.js',
-      'script/controllers.js',
-      'script/posts.js',
-      'script/head.html'
-       ];
-    self.addEventListener('install', function (event){
-	    event.waitUntil(
-		    caches.open(CACHE_NAME).then((cache)=>{
-			    console.log('cache opened');
-			    return cache.addAll(urlsToCache);
-		    })
-	    );
-    });
-    
-    function idbMs(rate='') {
-        let idb = require('idb');
-        let dbPromise = idb.open('currency', 1);
-        if (rate!=''){
-          return dbPromise.then((db) =>{
-            let tx = db.transaction('rate').objectStore('rate');
-                return tx.getAll(rate).then(function (rateVal) {
-                  //console.log(rateVal);
-                  return rateVal;
-                });
-        });
-        }
-        return dbPromise.then(function (db) {
-            let tx = db.transaction('currencyList').objectStore('currencyList');
-                return tx.getAll().then((currency)=> {
-                    return currency;
-                });
-        });
-    } 
-    self.addEventListener('fetch', function (event) {
-        //console.log("event.request");
-        //console.log(event.request.url);
-        event.respondWith(
-            caches.match(event.request).then( (response) =>{
-                if (response) {
-                    return response;
-                }
-                let fetchRequest = event.request.clone();
-                return fetch(fetchRequest).then((response) =>{
-                    //console.log(response)
-                   
-                    let responseToCache = response.clone();
-
-                    caches.open(CACHE_NAME).then( (cache) =>{
-                        //cache.put(event.request, responseToCache);
-                    })
-                    
-                    return response;
-                }).catch(function (err){
-                    //NOT CONNECTED TO SERVER
-                    if (fetchRequest.url.startsWith('https://free.currencyconverterapi.com/api/v5/convert')) {
-                       
-                        let url = fetchRequest.url;
-                        let query =url.substr(url.indexOf('=') + 1,7);
-                        console.log(query)
-                        console.log("Fetch from IDB")
-                        return idbMs(query).then( (val)=> {
-                          const rateVal={}
-                          rateVal[query]=val[0]
-
-                          return currList=new Response(JSON.stringify(rateVal));
-                        });
-                    } 
-                    if (fetchRequest.url.startsWith('https://free.currencyconverterapi.com/api/v5/countries')) {
-                       
-                      console.log("Fetching from IDB...")
-                      //console.log(res)
-                       return idbMs().then((cur)=> {
-                          return currList=new Response(JSON.stringify(cur));
-                        });
-                       
-                        
-                    } 
-                    
-                });
-            }) 
-        ) 
-    })
-   
-},{"idb":1}]},{},[2]);

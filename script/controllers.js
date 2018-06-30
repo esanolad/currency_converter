@@ -354,6 +354,8 @@
         fromCurrency = encodeURIComponent($scope.fromCountry);
         toCurrency = encodeURIComponent($scope.toCountry);
         amount=encodeURIComponent($scope.amount)
+        console.log(amount)
+        if (amount==undefined) return;
         var query = fromCurrency + '_' + toCurrency; 
         var query2 = toCurrency + '_' + fromCurrency
         var url = `https://free.currencyconverterapi.com/api/v5/convert?q=${query}&compact=ultra`;
