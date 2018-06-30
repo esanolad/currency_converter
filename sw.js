@@ -340,20 +340,20 @@
         if (rate!=''){
           return dbPromise.then((db) =>{
             let tx = db.transaction('rate').objectStore('rate');
-                return tx.getAll(rate).then(function (rateVal) {
+                return tx.getAll(rate).then( (rateVal) =>{
                   //console.log(rateVal);
                   return rateVal;
                 });
         });
         }
-        return dbPromise.then(function (db) {
+        return dbPromise.then( (db) =>{
             let tx = db.transaction('currencyList').objectStore('currencyList');
                 return tx.getAll().then((currency)=> {
                     return currency;
                 });
         });
     } 
-    self.addEventListener('fetch', function (event) {
+    self.addEventListener('fetch',  (event) =>{
         //console.log("event.request");
         //console.log(event.request.url);
         event.respondWith(

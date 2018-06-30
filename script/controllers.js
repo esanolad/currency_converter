@@ -317,10 +317,10 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function(){
-        navigator.serviceWorker.register('/sw.js').then(function(registration){
+        navigator.serviceWorker.register('/sw.js').then((registration)=>{
           console.log('Registration Successful with scope', registration.scope);
  
-        }, function(err){
+        }, (err)=>{
           console.log('Registration Failed', err);
         });
         });
@@ -334,7 +334,7 @@
         var store=db.createObjectStore('currencyList', {keyPath:'currencyId'});
         var store=db.createObjectStore('rate');
       })
-      dbPromise.then(function(db){
+      dbPromise.then((db)=>{
         var tx=db.transaction('currencyList','readwrite')
         var store=tx.objectStore('currencyList')
         for (const c in country){
@@ -342,7 +342,7 @@
           store.put(country[c])
         }
         return tx.complete;
-      }).then(function(){
+      }).then(()=>{
         //console.log("Complete");
       })
       
@@ -354,31 +354,38 @@
         fromCurrency = encodeURIComponent($scope.fromCountry);
         toCurrency = encodeURIComponent($scope.toCountry);
         amount=encodeURIComponent($scope.amount)
-        console.log(amount)
-        if (amount==undefined) return;
-        var query = fromCurrency + '_' + toCurrency; 
-        var query2 = toCurrency + '_' + fromCurrency
-        var url = `https://free.currencyconverterapi.com/api/v5/convert?q=${query}&compact=ultra`;
-        $http.get(url).then((response)=>{
-          //console.log(response.data)
-          var rate=response.data[query];
-          //console.log(rate)
-          var rate2=1/rate;
-          var result = amount*rate
-          dbPromise.then(function(db){
-            var tx=db.transaction('rate','readwrite')
-            var store=tx.objectStore('rate')
-            store.put(response.data[query], query);
-            store.put(rate2,query2);
-            return tx.complete;
-          }).then(function(){
-            //console.log("Complete");
-          })
-          //console.log(result)
-          $scope.result=`${result.toFixed(2)}`;
-          $scope.rate=rate.toFixed(2)
-          $scope.showResult=true
-        });
+       // console.log(amount)
+        if (amount=="undefined") {
+          //console.log(amount)
+          return
+        }
+         else {
+          var query = fromCurrency + '_' + toCurrency; 
+          var query2 = toCurrency + '_' + fromCurrency
+          var url = `https://free.currencyconverterapi.com/api/v5/convert?q=${query}&compact=ultra`;
+          $http.get(url).then((response)=>{
+            //console.log(response.data)
+            var rate=response.data[query];
+            //console.log(rate)
+            var rate2=1/rate;
+            var result = amount*rate
+            dbPromise.then((db)=>{
+              var tx=db.transaction('rate','readwrite')
+              var store=tx.objectStore('rate')
+              store.put(response.data[query], query);
+              store.put(rate2,query2);
+              return tx.complete;
+            }).then(()=>{
+              //console.log("Complete");
+            })
+            //console.log(result)
+            $scope.result=`${result.toFixed(2)}`;
+            $scope.rate=rate.toFixed(2)
+            $scope.showResult=true
+          });
+
+        };
+        
         
       }
     });
