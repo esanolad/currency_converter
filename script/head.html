@@ -21,7 +21,7 @@
     </div>
     <div class="row">
         <div class=" column ui input focus right aligned">
-                <input type="text" placeholder="Amount" ng-model="amount">
+                <input type="number" placeholder="Amount" ng-model="amount">
         </div>
         <div class=" column">
                 <button class="ui large button" ng-click="convert()">
@@ -31,10 +31,18 @@
     </div>
     <div class="row" ng-show="showResult">
         <div class="left aligned column">
-            <a class="ui basic big label" ng-bind="rate">0.00</a>
+            <!--<a class="ui basic big label" ng-bind="rate">0.00</a> -->
+            <div class="ui big label">
+                Rate:
+                <div class="detail" ng-bind="rate"></div>
+            </div>
         </div>
         <div class="left aligned column">
-            <a class="ui basic big label" ng-bind="result">0.00</a>
+           <!-- <a class="ui basic big label" ng-bind="result">0.00</a> -->
+            <div class="ui big label">
+                Amount:
+                <div class="detail" ng-bind="result"></div>
+            </div>
         </div> 
     </div>
 </div>

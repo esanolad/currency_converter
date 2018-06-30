@@ -313,22 +313,7 @@
 
 },{}],2:[function(require,module,exports){
     var idb = require('idb');
-    /*
-    function openDatabase() {
-        if (!navigator.serviceWorker) {
-            return Promise.resolve();
-        }
-        return idb.open('currency', 2, function (upgradeDb) {
-            //console.log(upgradeDb);
-            var currencyStore = upgradeDb.createObjectStore('currency');
-            currencyStore.createIndex("id","currencyId")
-            currencyStore.put({id:1,currencyId: "AFN",
-            currencyName: "Afghan afghani",
-            })
-            //store.createIndex('by-source', 'source.id');
-            //store.createIndex('by-country', )
-        });
-    } */
+    
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function(){
@@ -364,6 +349,7 @@
       $scope.countryList=country;
       //console.log(country)
       $scope.convert = function(){
+        $scope.showResult=false
         //console.log($scope.amount)
         fromCurrency = encodeURIComponent($scope.fromCountry);
         toCurrency = encodeURIComponent($scope.toCountry);
@@ -387,8 +373,9 @@
             //console.log("Complete");
           })
           //console.log(result)
-          $scope.result=result.toFixed(2);
+          $scope.result=`${result.toFixed(2)}`;
           $scope.rate=rate.toFixed(2)
+          $scope.showResult=true
         });
         
       }
