@@ -343,7 +343,7 @@
       
     }
     
-    adminApp.controller('ctrl', function ($scope, $http, country, currency) {
+    adminApp.controller('ctrl', function ($scope, $http, country) {
       var idb = require('idb'); 
       var dbPromise=idb.open('currency',1,function(db){
         var store=db.createObjectStore('currencyList', {keyPath:'currencyId'});
@@ -378,7 +378,7 @@
               return cursor.continue().then(deleteRest);
           }); 
       })*/
-      $scope.currencyList=currency;
+     // $scope.currencyList=currency;
       $scope.countryList=country;
       $scope.convert = function(){
         //console.log($scope.amount)
@@ -389,7 +389,9 @@
         var query2 = toCurrency + '_' + fromCurrency
         var url = `https://free.currencyconverterapi.com/api/v5/convert?q=${query}&compact=ultra`;
         $http.get(url).then((response)=>{
+          console.log(response.data)
           var rate=response.data[query];
+          console.log(rate)
           var rate2=1/rate;
           var result = amount*rate
           dbPromise.then(function(db){
@@ -401,9 +403,9 @@
           }).then(function(){
             //console.log("Complete");
           })
-          console.log(result)
-          $scope.result=result;
-          $scope.rate=rate
+          //console.log(result)
+          $scope.result=result.toFixed(2);
+          $scope.rate=rate.toFixed(2)
         });
         
       }

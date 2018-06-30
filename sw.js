@@ -312,16 +312,18 @@
 }());
 
 },{}],2:[function(require,module,exports){
-    var CACHE_NAME = "currency_cache_v1";
-    var idb = require('idb');
-    var urlsToCache = [
-      '/',
+    let CACHE_NAME = "currency_cache_v1";
+    let idb = require('idb');
+    let urlsToCache = [
+      '/index.html',
       '/css/semantic.min.css',
       'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.js',
       'https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.js',
       'script/app.js',
       'script/controllers.js',
-      'script/posts.js'
+      'script/posts.js',
+      'script/head.html'
+      
        ];
     self.addEventListener('install', function (event){
 	    event.waitUntil(
@@ -331,11 +333,12 @@
 		    })
 	    );
     });
+    /*
     function idbMs(source) {
-        var idb = require('idb');
-        var dbPromise = idb.open('currency', 2);
+        let idb = require('idb');
+        let dbPromise = idb.open('currency', 2);
         return dbPromise.then(function (db) {
-            var tx = db.transaction('currency').objectStore('currency').index('by-source');
+            let tx = db.transaction('currency').objectStore('currency').index('by-source');
             if (source == undefined) {
                 return tx.getAll().then(function (message) {
                     //console.log(message);
@@ -347,38 +350,33 @@
                 return message;
             });
         });
-    }
-    
-
+    } */
     self.addEventListener('fetch', function (event) {
-        //console.log(event.request);
+        //console.log("event.request");
         console.log(event.request.url);
         event.respondWith(
-            //new Response("Hello world")
-        
             caches.match(event.request).then(function (response) {
-                //serve from cache
                 if (response) {
-                   // console.log('fetching from cache: ', response.url);
                     return response;
                 }
-
-                
-                
-                var fetchRequest = event.request.clone();
-                
-                
-                //fetch the request and check response for offline status
-
+                let fetchRequest = event.request.clone();
                 return fetch(fetchRequest).then(function (response) {
-                    //check if client is requesting for sources
-                    
-                    //console.log(fetchRequest.url);
-                    //CHECK IF THE SERVER CANNOT CONNECT TO NEWSAPI
-                    if (fetchRequest.url.startsWith('https://free.currencyconverterapi.com/api/v5/convert')) {
-                        var url = fetchRequest.url;
-                        var source = url.slice(url.lastIndexOf('/') + 1);
-                        console.log("API CALL")
+                    console.log(response)
+                    //CHECK IF THE SERVER CANNOT CONNECT TO THE API
+                    if (fetchRequest.url.startsWith('https://free.currencyconverterapi.com/api/v5/countries') && response.status == 404) {
+                        let url = fetchRequest.url;
+                        let query =url.substr(url.indexOf('=') + 1,7);
+                        console.log(url)
+                        console.log("Fetch from IDB")
+                        return new Response(JSON.stringify({"ade":"sola"}));
+                    } 
+                    if (fetchRequest.url.startsWith('https://free.currencyconverterapi.com/api/v5/convert')&& response.status == 404) {
+                      //https://free.currencyconverterapi.com/api/v5/convert?q=USD_PHP&compact=ultra
+                        let url = fetchRequest.url;
+                        let query =url.substr(url.indexOf('=') + 1,7);
+                        console.log(query)
+                        console.log("Fetch from IDB")
+                        return new Response(JSON.stringify({"ade":"sola"}));
                     } 
                     if (fetchRequest.url.startsWith('http://localhost:3000/api/posts') && response.status == 404) {
                         
@@ -392,7 +390,7 @@
 
       
 
-                    var responseToCache = response.clone();
+                    let responseToCache = response.clone();
 
                     caches.open(CACHE_NAME).then(function (cache) {
                         //cache.put(event.request, responseToCache);
@@ -401,13 +399,37 @@
                     return response;
                 }).catch(function (err){
                     //NOT CONNECTED TO SERVER
-                    if (fetchRequest.url.startsWith('http://localhost:3000/api/sources')) {
-                        var url = fetchRequest.url;
-                        var source = url.slice(url.lastIndexOf('/') + 1);
-                        return idbMs(source).then(function (news) {
-                            return new Response(JSON.stringify(news));
+                    if (fetchRequest.url.startsWith('https://free.currencyconverterapi.com/api/v5/convert')) {
+                       
+                        let url = fetchRequest.url;
+                        let query =url.substr(url.indexOf('=') + 1,7);
+                        console.log(query)
+                        console.log("Fetch from IDB")
+                        let res= new Response(JSON.stringify({
+                          "USD_PHP": 53.310001
+                          })
+                        );
+                        console.log(res)
+                        return res
+                    } 
+                    if (fetchRequest.url.startsWith('https://free.currencyconverterapi.com/api/v5/countries')) {
+                       
+                        let url = fetchRequest.url;
+                        let query =url.substr(url.indexOf('=') + 1,7);
+                        console.log(query)
+                        console.log("Fetch from IDB")
+                        let res= new Response(JSON.stringify({
+                          "alpha3": "AFG",
+                          "currencyId": "AFN",
+                          "currencyName": "Afghan afghani",
+                          "currencySymbol": "؋",
+                          "id": "AF",
+                          "name": "Afghanistan"
+                          })
+                        );
+                        console.log(res)
+                        return res
                         
-                        });
                     } 
                     if (fetchRequest.url.startsWith('http://localhost:3000/api/posts')) {
                         
@@ -419,15 +441,6 @@
                         });
                     } 
 
-                    if (fetchRequest.url=='http://localhost:3000/api/favourite/'){
-
-                    //fetch data from favorite store
-                    //console.log('handle');
-                      return favorite().then(function (news) {
-                          return new Response(JSON.stringify(news));
-                      });
-
-                    } 
 
                 });
             }) 

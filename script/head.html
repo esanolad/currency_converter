@@ -4,7 +4,7 @@
         <a class="ui big label">From Currency:</a>
         </div>
         <div class="left aligned column">
-        <select class="ui dropdown" ng-model="fromCountry">
+        <select class="ui fluid dropdown" ng-model="fromCountry">
             <option ng-repeat="fromCountry in countryList" ng-value="fromCountry.currencyId">{{fromCountry.currencyName}}</option>
         </select>
     </div>
@@ -14,7 +14,7 @@
             <a class="ui big label ">To Currency:</a>
         </div>
         <div class="left aligned column">
-            <select class="ui  dropdown" ng-model="toCountry">
+            <select class="ui fluid dropdown" ng-model="toCountry">
                     <option ng-repeat="toCountry in countryList" ng-value="toCountry.currencyId">{{toCountry.currencyName}}</option>
             </select>
     </div>
