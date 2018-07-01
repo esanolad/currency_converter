@@ -9,25 +9,26 @@ if ('serviceWorker' in navigator) {
 	
 }
 
-adminApp.controller('ctrl', function ($scope, $http, country) {
+adminApp.controller('ctrl', function ($scope, $http, currency) {
 	
 	const dbPromise=idb.open('currency',1,(db)=>{
-	let store=db.createObjectStore('currencyList', {keyPath:'currencyId'});
+	//let store=db.createObjectStore('currencyList', {keyPath:'currencyId'});
+	let store=db.createObjectStore('currencyList', {keyPath:'id'});
 	store=db.createObjectStore('rate');
 	})
 	dbPromise.then((db)=>{
 	const tx=db.transaction('currencyList','readwrite')
 	store=tx.objectStore('currencyList')
-	for (const c in country){
+	for (const c in currency){
 		//console.log(c)
-		store.put(country[c])
+		store.put(currency[c])
 	}
 	return tx.complete;
 	}).then(()=>{
 	//console.log("Complete");
 	})
 	
-	$scope.countryList=country;
+	$scope.countryList=currency;
 	//console.log(country)
 	$scope.convert = function(){
 	$scope.showResult=false
@@ -35,7 +36,7 @@ adminApp.controller('ctrl', function ($scope, $http, country) {
 	fromCurrency = encodeURIComponent($scope.fromCountry);
 	toCurrency = encodeURIComponent($scope.toCountry);
 	amount=encodeURIComponent($scope.amount)
-	// console.log(amount)
+	//console.log(toCurrency)
 	if (amount=="undefined") {
 		//console.log(amount)
 		return

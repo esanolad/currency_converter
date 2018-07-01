@@ -10,20 +10,21 @@ adminApp.config(function($stateProvider){
 			url: '/',
 			templateUrl: 'script/head.html',
 			resolve: {
-				/*
-				currency: function(Posts){
+				
+				currency: function (Posts){
 					return Posts.currencies().then(function(data){
 						//console.log(data);
 						return data;
 					}); 
-				}, */
+				}, 
+				/*
 				country: function(Posts){
 					return Posts.countries().then((data)=>{
 						//console.log(data);
 						return data;
 					}); 
-				}
-			},
+				}*/
+			}, 
 			controller: 'ctrl'
 		})
 		

@@ -379,7 +379,7 @@
                            
                             let url = fetchRequest.url;
                             let query =url.substr(url.indexOf('=') + 1,7);
-                            console.log(query)
+                            //console.log(query)
                             console.log("Fetch from IDB")
                             return idbMs(query).then( (val)=> {
                               const rateVal={}
