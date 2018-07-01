@@ -315,6 +315,7 @@
         let CACHE_NAME = "currency_cache_v1";
         let idb = require('idb');
         let urlsToCache = [
+          '/',
           '/index.html',
           '/css/semantic.min.css',
           'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.js',
