@@ -321,6 +321,7 @@
           'https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular.js',
           'https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.js',
           'https://fonts.gstatic.com/s/lato/v14/S6uyw4BMUTPHjx4wXg.woff2',
+          'https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic&subset=latin',
           'script/app.js',
           'script/controller.js',
           'script/posts.js',
