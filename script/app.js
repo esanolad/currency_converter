@@ -7,10 +7,9 @@ var adminApp = angular.module('currencyConverter', [
 adminApp.config(function($stateProvider){
 	$stateProvider
 		.state('post', {
-			url: '/',
+			//url: '/',
 			templateUrl: 'script/head.html',
 			resolve: {
-				
 				currency: function (Posts){
 					return Posts.currencies().then(function(data){
 						//console.log(data);
