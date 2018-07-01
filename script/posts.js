@@ -6,7 +6,13 @@ postsModule.service('Posts', function($http){
 		currencies: function(){
 			return $http.get("https://free.currencyconverterapi.com/api/v5/currencies")
 				.then((response)=>{
-				return response.data.results;
+					//console.log()
+					if (response.data.results) {
+						return response.data.results; //api data
+					} else
+					{
+						return response.data //idb data
+					}
 			});
 		},
 		countries: function(){

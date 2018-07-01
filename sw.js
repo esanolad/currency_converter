@@ -379,7 +379,7 @@
                            
                             let url = fetchRequest.url;
                             let query =url.substr(url.indexOf('=') + 1,7);
-                            //console.log(query)
+                            console.log(query)
                             console.log("Fetch from IDB")
                             return idbMs(query).then( (val)=> {
                               const rateVal={}
@@ -388,11 +388,12 @@
                               return currList=new Response(JSON.stringify(rateVal));
                             });
                         } 
-                        if (fetchRequest.url.startsWith('https://free.currencyconverterapi.com/api/v5/countries')) {
+                        if (fetchRequest.url.startsWith('https://free.currencyconverterapi.com/api/v5/currencies')) {
                            
                           console.log("Fetching from IDB...")
                           //console.log(res)
                            return idbMs().then((cur)=> {
+                             //console.log(cur)
                               return currList=new Response(JSON.stringify(cur));
                             });
                            
